@@ -4,12 +4,21 @@ import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export default function TopicVideoPage() {
-    const { subject, topic } = useParams();
+    const params = useParams();
     const router = useRouter();
+
+    // Safely extract subject and topic (default empty strings)
+    const subject = Array.isArray(params.subject)
+        ? params.subject[0]
+        : params.subject ?? "";
+    const topic = Array.isArray(params.topic) ? params.topic[0] : params.topic ?? "";
+
     const [videoId, setVideoId] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
+        if (!subject || !topic) return; // avoid decoding undefined
+
         const subjectName = decodeURIComponent(subject);
         const topicName = decodeURIComponent(topic);
         const cacheKey = `skillquest-video-${subjectName}-${topicName}`;
